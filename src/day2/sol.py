@@ -28,7 +28,18 @@ def part1(data):
 
 
 def part2(data):
-    return ""
+    horizontal = 0
+    depth = 0
+    aim = 0
+    for movement in tokenize(data):
+        if movement['direction'] == 'forward':
+            horizontal += movement['value']
+            depth += (aim * movement['value'])
+        elif movement['direction'] == 'up':
+            aim -= movement['value']
+        elif movement['direction'] == 'down':
+            aim += movement['value']
+    return horizontal * depth
 
 
 data = read_data(sys.argv[1], str)
