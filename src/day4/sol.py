@@ -99,7 +99,18 @@ def part1(data):
 
 
 def part2(data):
-    return ""
+    bingo = parse_input(data)
+    winners = set()
+    last_winner = None
+    for draw in bingo['draws']:
+        for board in bingo['boards']:
+            if board.id in winners:
+                continue
+            is_bingo = board.mark(draw)
+            if is_bingo:
+                winners.add(board.id)
+                last_winner = draw * board.unmarked_sum()
+    return last_winner
 
 
 data = read_data(sys.argv[1], str)
