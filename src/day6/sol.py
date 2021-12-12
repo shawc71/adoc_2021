@@ -1,27 +1,34 @@
+# https://adventofcode.com/2021/day/6
 import sys
 from ..common import read_data
+from collections import defaultdict
 
 
-def process_round(state):
-    next_state = []
-    for fish_timer in state:
+def process_round(timer_map):
+    next_timer_map = defaultdict(lambda: 0)
+    for fish_timer, freq in timer_map.items():
         if fish_timer == 0:
-            next_state.append(6)
-            next_state.append(8)
+            next_timer_map[6] += freq
+            next_timer_map[8] = freq
         else:
-            next_state.append(fish_timer - 1)
-    return next_state
+            next_timer_map[fish_timer - 1] += freq
+    return next_timer_map
 
 
 def part1(data, rounds):
-    state = parse(data)
-    for _ in range(rounds):
-        state = process_round(state)
-    return len(state)
+    return part2(data, rounds)
 
 
 def part2(data, rounds):
-    return ""
+    timer_map = defaultdict(lambda: 0)
+    for fish_timer in parse(data):
+        timer_map[fish_timer] += 1
+    for _ in range(rounds):
+        timer_map = process_round(timer_map)
+    count = 0
+    for freq in timer_map.values():
+        count += freq
+    return count
 
 
 def parse(line):
