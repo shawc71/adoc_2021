@@ -6,7 +6,7 @@ then
 fi
 dir="src/day$1"
 mkdir "$dir"
-cp ./template.py "$dir/sol.py"
+python3 ./templater.py "$1" > "$dir/sol.py"
 touch "$dir/__init__.py"
 touch "$dir/sample-data.txt"
 touch "$dir/data.txt"
