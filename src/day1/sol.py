@@ -1,4 +1,6 @@
+# https://adventofcode.com/2021/day/1
 import sys
+
 from ..common import read_data
 
 

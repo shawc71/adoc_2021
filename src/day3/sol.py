@@ -1,3 +1,4 @@
+# https://adventofcode.com/2021/day/3
 import sys
 from ..common import read_data
 
@@ -37,7 +38,6 @@ def part1(bin_numbers):
         epsilon += least_common(freq)
 
     return int(gamma, 2) * int(epsilon, 2)
-
 
 def calc_rating(candidates, most_or_least_common_func):
     rating = None
