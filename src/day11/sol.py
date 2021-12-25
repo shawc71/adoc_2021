@@ -80,7 +80,20 @@ def part1(data):
 
 
 def part2(data):
-    return ""
+    step = 0
+    grid = parse(data)
+    while True:
+        already_lit_up = set()
+        increment_energy(grid)
+        light_up(grid, already_lit_up)
+        step += 1
+        all_lit = True
+        for i, _ in enumerate(grid):
+            for j, _ in enumerate(grid[i]):
+                if grid[i][j] != 0:
+                    all_lit = False
+        if all_lit:
+            return step
 
 
 data = read_data(sys.argv[1], str)
