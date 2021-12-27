@@ -1,6 +1,6 @@
 # https://adventofcode.com/2021/day/13
 import sys
-from ..common import read_data
+from ..common import read_data, print_2d_array
 
 
 def parse(lines):
@@ -80,17 +80,23 @@ def solve(data, only_first_transform):
     fill(paper, input['points'])
     if only_first_transform:
         paper, _ = execute_transform(paper, input['transforms'][0], input['points'])
-    return count_visible(paper)
+        return paper
+    points = input['points']
+    for transform in input['transforms']:
+        paper, points = execute_transform(paper, transform, points)
+    return paper
 
 
 def part1(data):
-    return solve(data, True)
+    paper = solve(data, True)
+    return count_visible(paper)
 
 
 def part2(data):
-    return ""
+    return solve(data, False)
 
 
 data = read_data(sys.argv[1], str)
 print(f"Part 1: {part1(data)}")
-print(f"Part 2: {part2(data)}")
+print(f"Part 2:")
+print_2d_array(part2(data), 1)
