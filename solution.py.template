@@ -1,6 +1,6 @@
 # https://adventofcode.com/2021/day/${day_number}
 import sys
-from ..common import read_data
+from ..common import *
 
 
 def part1(data):
