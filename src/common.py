@@ -10,3 +10,25 @@ def print_2d_array(grid, chars_per_slot):
             formatted = f"{' ' * pad}{grid[i][j]}"
             print(formatted, end="")
         print("")
+
+
+def get_adjacent_points(grid, point, include_diagonals):
+    i = point[0]
+    j = point[1]
+    candidates = []
+    if not include_diagonals:
+        candidates.extend([
+            (i - 1, j), (i + 1, j),
+            (i, j - 1), (i, j + 1)
+        ])
+    else:
+        candidates.extend([
+            (i - 1, j - 1), (i - 1, j), (i - 1, j + 1),
+            (i, j - 1), (i, j + 1),
+            (i + 1, j - 1), (i + 1, j), (i + 1, j + 1),
+        ])
+    final = []
+    for c in candidates:
+        if 0 <= c[0] < len(grid) and 0 <= c[1] < len(grid[c[0]]):
+            final.append(c)
+    return final
