@@ -30,20 +30,32 @@ def part1(data):
     risks_from_origin[0][0] = 0
     pq = []
     pq_lookup = {}
-    for i, _ in enumerate(risks_from_origin):
-        for j, _ in enumerate(risks_from_origin[i]):
-            item = PqItem(risks_from_origin[i][j], (i, j))
-            pq_lookup[item.data] = item
-            heapq.heappush(pq, item)
+
+    item = PqItem(risks_from_origin[0][0], (0, 0))
+    pq_lookup[item.data] = item
+    heapq.heappush(pq, item)
+    visited = set()
 
     while len(pq) != 0:
         node = heapq.heappop(pq)
+        if node.data in visited:
+            continue
+        visited.add(node.data)
         for adj in get_adjacent_points(grid, node.data, False):
+            if adj in visited:
+                continue
+
             candidate_risk = node.priority + grid[adj[0]][adj[1]]
             if candidate_risk < risks_from_origin[adj[0]][adj[1]]:
                 risks_from_origin[adj[0]][adj[1]] = candidate_risk
-                pq_lookup[adj].priority = candidate_risk
-                heapq.heapify(pq)
+                if adj in pq_lookup:
+                    pq_lookup[adj].priority = candidate_risk
+                    heapq.heapify(pq)
+                else:
+                    item = PqItem(candidate_risk, adj)
+                    pq_lookup[item.data] = item
+                    heapq.heappush(pq, item)
+
     return risks_from_origin[len(risks_from_origin) - 1][len(risks_from_origin[0]) - 1]
 
 
