@@ -1,8 +1,17 @@
 # https://adventofcode.com/2021/day/16
 import sys
 from ..common import *
+from functools import reduce
+from operator import mul
 
+PACKET_TYPE_SUM = 0
+PACKET_TYPE_PRODUCT = 1
+PACKET_TYPE_MIN = 2
+PACKET_TYPE_MAX = 3
 PACKET_TYPE_LITERAL = 4
+PACKET_TYPE_GT = 5
+PACKET_TYPE_LT = 6
+PACKET_TYPE_EQ = 7
 
 
 class Packet:
@@ -22,6 +31,31 @@ class Packet:
         for s in self.subpackets:
             version_sum += s.cumulative_version_sum()
         return version_sum
+
+    def eval(self):
+        subpacket_eval_results = list(map(lambda x: x.eval(), self.subpackets))
+        if self.type_id == PACKET_TYPE_LITERAL:
+            return self.val
+        elif self.type_id == PACKET_TYPE_SUM:
+            return sum(subpacket_eval_results)
+        elif self.type_id == PACKET_TYPE_PRODUCT:
+            return reduce(mul, subpacket_eval_results, 1)
+        elif self.type_id == PACKET_TYPE_MIN:
+            return min(subpacket_eval_results)
+        elif self.type_id == PACKET_TYPE_MAX:
+            return max(subpacket_eval_results)
+        elif self.type_id == PACKET_TYPE_GT:
+            if self.subpackets[0].eval() > self.subpackets[1].eval():
+                return 1
+            return 0
+        elif self.type_id == PACKET_TYPE_LT:
+            if self.subpackets[0].eval() < self.subpackets[1].eval():
+                return 1
+            return 0
+        elif self.type_id == PACKET_TYPE_EQ:
+            if self.subpackets[0].eval() == self.subpackets[1].eval():
+                return 1
+            return 0
 
 
 def to_binary(target):
@@ -121,7 +155,8 @@ def part1(data):
 
 
 def part2(data):
-    return ""
+    packet, _ = process(data)
+    return packet.eval()
 
 
 data = read_data(sys.argv[1], str)
