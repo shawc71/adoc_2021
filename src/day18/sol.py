@@ -1,4 +1,5 @@
 # https://adventofcode.com/2021/day/18
+import math
 import sys
 from collections import deque
 from ..common import *
@@ -17,6 +18,46 @@ class SnailfishNumber:
         text = "[" + self.left.__repr__() + "," + self.right.__repr__() + "]"
         return text
 
+    def add(self, other):
+        root_node = SnailfishNumber(left=self, right=other)
+        self.parent = root_node
+        other.parent = root_node
+        continue_reducing = root_node.reduce()
+        while continue_reducing != 0:
+            print(root_node)
+            # print(continue_reducing)
+            continue_reducing = root_node.reduce()
+        return root_node
+
+    def reduce(self):
+        changes = 0
+        while True:
+            explosion_candidate = self.get_explosion_candidate()
+            if explosion_candidate is None:
+                break
+            print(f"candidate: {explosion_candidate}")
+            changes += 1
+            explosion_candidate.explode()
+            # print(f"post: {n}")
+        while True:
+            split_candidates = self.get_split_candidate()
+            # print(f"splt: {split_candidate}")
+            if len(split_candidates) == 0:
+                break
+            changes += 1
+            split_candidates[0].split()
+            # print(f"post: {n}")
+        return changes
+
+    def split(self):
+        left_val = math.floor(self.val/2)
+        right_val = math.ceil(self.val/2)
+        left_node = SnailfishNumber(val=left_val, parent=self)
+        right_node = SnailfishNumber(val=right_val, parent=self)
+        self.left = left_node
+        self.right = right_node
+        self.val = None
+
     def explode(self):
         if self.left is not None:
             left_val = self.left.val
@@ -31,12 +72,16 @@ class SnailfishNumber:
     def get_explosion_candidate(self):
         return SnailfishNumber._explosion_candidate_helper(0, self)
 
+    def get_split_candidate(self):
+        return SnailfishNumber._split_candidate_helper(self)
+
     @staticmethod
     def _distribute_left(val, curr_node):
         if curr_node.parent is None:
             return
         if curr_node.parent.left is not None and curr_node.parent.left != curr_node:
             if curr_node.parent.left.right is None:
+                print(curr_node.parent.left.val, val)
                 curr_node.parent.left.val += val
                 return
             curr_node = curr_node.parent.left.right
@@ -62,7 +107,6 @@ class SnailfishNumber:
 
     @staticmethod
     def _explosion_candidate_helper(level, node):
-        # print(f"{level}: {node}")
         if level == 4 and node.left is not None and node.right is not None:
             return node
 
@@ -79,6 +123,17 @@ class SnailfishNumber:
 
         return None
 
+    @staticmethod
+    def _split_candidate_helper(node):
+        # print(node)
+        to_return = []
+        if node.val is not None and node.val >= 10:
+            return [node]
+        if node.left is not None:
+            to_return.extend(SnailfishNumber._split_candidate_helper(node.left))
+        if node.right is not None:
+            to_return.extend(SnailfishNumber._split_candidate_helper(node.right))
+        return to_return
 
 def parse_number(line):
     stack = deque()
@@ -88,6 +143,10 @@ def parse_number(line):
         if char == '[':
             stack.append(char)
         elif char.isdigit():
+            # if char == "!":
+            #     char = "15"
+            # if char == "@":
+            #     char = "13"
             stack.append(SnailfishNumber(val=int(char)))
         elif char == "]":
             right = stack.pop()
@@ -115,16 +174,10 @@ def parse(data):
 
 def part1(data):
     numbers = parse(data)
-    for n in numbers:
-        print("---------------")
-        print(f"pre : {n}")
-        while True:
-            explosion_candidate = n.get_explosion_candidate()
-            if explosion_candidate is None:
-                break
-            print(f"candidate: {n.get_explosion_candidate()}")
-            explosion_candidate.explode()
-            print(f"post: {n}")
+    curr_sum = numbers[0]
+    for i in range(1, len(numbers)):
+        curr_sum = curr_sum.add(numbers[i])
+        print(curr_sum)
     return ""
 
 
