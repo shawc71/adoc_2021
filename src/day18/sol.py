@@ -22,31 +22,44 @@ class SnailfishNumber:
         root_node = SnailfishNumber(left=self, right=other)
         self.parent = root_node
         other.parent = root_node
-        continue_reducing = root_node.reduce()
-        while continue_reducing != 0:
-            print(root_node)
-            # print(continue_reducing)
-            continue_reducing = root_node.reduce()
+        has_changes = True
+        while has_changes:
+            # print(root_node)
+            has_changes = False
+            explosion_candidate = root_node.get_explosion_candidate()
+            print(explosion_candidate)
+            if explosion_candidate is not None:
+                # print(f"candidate: {explosion_candidate}")
+                explosion_candidate.explode()
+                has_changes = True
+                continue
+
+            split_candidates = root_node.get_split_candidate()
+            # print(f"splt: {split_candidate}")
+            if len(split_candidates) != 0:
+                # print(split_candidates)
+                split_candidates[0].split()
+                has_changes = True
+
         return root_node
 
     def reduce(self):
         changes = 0
-        while True:
-            explosion_candidate = self.get_explosion_candidate()
-            if explosion_candidate is None:
-                break
-            print(f"candidate: {explosion_candidate}")
-            changes += 1
-            explosion_candidate.explode()
-            # print(f"post: {n}")
-        while True:
-            split_candidates = self.get_split_candidate()
-            # print(f"splt: {split_candidate}")
-            if len(split_candidates) == 0:
-                break
-            changes += 1
-            split_candidates[0].split()
-            # print(f"post: {n}")
+        explosion_candidate = self.get_explosion_candidate()
+        if explosion_candidate is None:
+            return
+        print(f"candidate: {explosion_candidate}")
+        changes += 1
+        explosion_candidate.explode()
+        # print(f"post: {n}")
+    
+        split_candidates = self.get_split_candidate()
+        # print(f"splt: {split_candidate}")
+        if len(split_candidates) == 0:
+            break
+        changes += 1
+        split_candidates[0].split()
+        # print(f"post: {n}")
         return changes
 
     def split(self):
@@ -81,7 +94,7 @@ class SnailfishNumber:
             return
         if curr_node.parent.left is not None and curr_node.parent.left != curr_node:
             if curr_node.parent.left.right is None:
-                print(curr_node.parent.left.val, val)
+                # print(curr_node.parent.left.val, val)
                 curr_node.parent.left.val += val
                 return
             curr_node = curr_node.parent.left.right
@@ -177,7 +190,7 @@ def part1(data):
     curr_sum = numbers[0]
     for i in range(1, len(numbers)):
         curr_sum = curr_sum.add(numbers[i])
-        print(curr_sum)
+        # print(curr_sum)
     return ""
 
 
